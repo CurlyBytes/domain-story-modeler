@@ -253,7 +253,7 @@ document.onkeydown = function(e) {
 
 function initiateDSTDownload() {
   if (canvas._rootElement) {
-    const objects = createObjectListForDSTDownload(version);
+    const objects = createObjectListForDSTDownload(version, modeler);
 
     const json = JSON.stringify(objects);
     const filename =

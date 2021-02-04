@@ -1,6 +1,6 @@
 'use strict';
 
-import { ACTIVITY, TEXTANNOTATION, ACTOR, WORKOBJECT } from '../../language/elementTypes';
+import { ACTIVITY, TEXTANNOTATION, ACTOR, WORKOBJECT, CONNECTION } from '../../language/elementTypes';
 import { getAllCanvasObjects, getAllGroups } from '../../language/canvasElementRegistry';
 import { createConfigFromDictionaries } from '../iconSetCustomization/persitence';
 import { removeDirtyFlag } from './dirtyFlag';
@@ -30,12 +30,25 @@ export function downloadDST(filename, text) {
   document.body.removeChild(element);
 }
 
-export function createObjectListForDSTDownload(version) {
+export function createObjectListForDSTDownload(version, modeler) {
+
   let allObjectsFromCanvas = getAllCanvasObjects();
   let groups = getAllGroups();
   let text = '';
 
   let objectList = [];
+
+  allObjectsFromCanvas.filter(element => element.businessObject.type === CONNECTION).forEach(connection => {
+    let source = connection.source;
+    let target = connection.target;
+
+    if (allObjectsFromCanvas.filter(element => element.id == source.id).size == 0) {
+      allObjectsFromCanvas.push(modeler.getCustomElement(source.id));
+    }
+    if (allObjectsFromCanvas.filter(element => element.id == target.id).size == 0) {
+      allObjectsFromCanvas.push(modeler.getCustomElement(target.id));
+    }
+  });
 
   allObjectsFromCanvas.forEach(canvasElement =>{
     if (canvasElement.type == ACTIVITY) {
